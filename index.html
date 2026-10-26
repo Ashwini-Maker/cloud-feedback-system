@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud Feedback System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Share Your Feedback</h1>
+    <input id="name" placeholder="Your name">
+    <input id="email" type="email" placeholder="Email">
+    <select id="rating">
+      <option value="5">5 - Excellent</option>
+      <option value="4">4 - Good</option>
+      <option value="3">3 - Average</option>
+      <option value="2">2 - Poor</option>
+      <option value="1">1 - Very Poor</option>
+    </select>
+    <textarea id="message" placeholder="Your feedback"></textarea>
+    <button id="submit">Submit</button>
+    <p id="status"></p>
+  </div>
+
+  <script type="module">
+    import { db } from "./firebase.js";
+    import { collection, addDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    document.getElementById("submit").onclick = async () => {
+      const name = document.getElementById("name").value.trim();
+      const message = document.getElementById("message").value.trim();
+      if (!name || !message) return alert("Please fill name and feedback");
+      await addDoc(collection(db, "feedback"), {
+        name,
+        email: document.getElementById("email").value.trim(),
+        rating: Number(document.getElementById("rating").value),
+        message,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById("status").textContent = "Thank you! Feedback submitted.";
+    };
+  </script>
+</body>
+</html>
